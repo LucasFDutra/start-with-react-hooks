@@ -107,7 +107,6 @@ Dentro do arquivo App.js vamos escrever um projeto simples, que terá um botão 
 import React, {useState} from 'react';
 
 function App() {
-  // define a variável count com o valor inicial 0, e a função setCount como sendo a responsável por alterar o valor de count
   const [count, setCount] = useState(0);
   return (
     <div>
@@ -123,4 +122,103 @@ export default App;
 <img src='./images/figure001.gif' width='200' />
 
 
+# Projeto use-effect
+## Utilidade do hook
+é um hook de efeito. Sempre que algo pré-determinado acontecer na aplicação ele irá executar
+
+Esse hook consegue exercer duas funções diferentes (que me interessam kkk)
+
+### Na montagem do componente
+```JavaScript
+useEffect(() => {
+  código...
+}, []);
+```
+
+Com essa sintaxe ele executa o código assim que o componente é montado.
+
+### Na atualização do componente
+
+```JavaScript
+useEffect(() => {
+  código
+}, [vigia]);
+```
+
+Com essa sintaxe ele executará assim que a variável `vigia` for modificada, fazendo com que o `código` será executado.
+
+## O projeto
+Vou construir uma aplicação dentro do `App.js` que mostrará alguns `console.log` somente para poder compreendermos como funciona
+
+```JavaScript
+import React, {useState, useEffect} from 'react';
+
+function App() {
+  const [count, setCount] = useState(0);
+  
+  useEffect(() => {
+    console.log('montagem do componente');
+  }, []);
+  
+  useEffect(() => {
+    console.log('atualização do componente');
+  }, [count]);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)} >Add +1</button>
+    </div>
+  );
+}
+
+export default App;
+
+```
+
+<img src='./images/figure002.gif' width='300' />
+
+Veja que no inicio ele também mostra a atualização do componente, mas isso é porque assim que o componente é gerado o valor de `count` é atribuído, logo isso é uma mudança na variável, por isso ele executa.
+
+
+
+# Projeto use-context
+
+## Utilidade do hook
+## O projeto
+
+
+# Projeto use-reducer
+## Utilidade do hook
+## O projeto
+
+
+# Projeto use-callback
+## Utilidade do hook
+## O projeto
+
+
+# Projeto use-memo
+## Utilidade do hook
+## O projeto
+
+
+# Projeto use-ref
+## Utilidade do hook
+## O projeto
+
+
+# Projeto use-imperative-handle
+## Utilidade do hook
+## O projeto
+
+
+# Projeto use-layout-effect
+## Utilidade do hook
+## O projeto
+
+
+# Projeto use-debug-value
+## Utilidade do hook
+## O projeto
 
