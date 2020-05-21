@@ -176,7 +176,7 @@ export default App;
 
 ```
 
-<img src='./images/figure002.gif' width='300' />
+<img src='./images/figure002.gif' width='400' />
 
 Veja que no inicio ele também mostra a atualização do componente, mas isso é porque assim que o componente é gerado o valor de `count` é atribuído, logo isso é uma mudança na variável, por isso ele executa.
 
@@ -185,8 +185,164 @@ Veja que no inicio ele também mostra a atualização do componente, mas isso é
 # Projeto use-context
 
 ## Utilidade do hook
-## O projeto
+Para quando queremos que uma árvore de componentes tenha acesso a determinadas propriedades. Ou seja, com isso evitamos de ficar passando `props` nos componentes. Uma coisa muito boa, é que caso o valor do contexto seja alterado todos os lugares envolvidos por ele serão renderizados novamente.
 
+> Porém vale ressaltar que essa solução se aplica apenas para componentes dentro da mesma árvore de componentes. E que se deve ter um certo cuidade com isso, pois pode prejudicar a reutilização de componentes.
+
+Para indicar sua utilização, vou pegar o exemplo da propria documentação do react.
+
+```JavaScript
+// cria um objeto para ser nosso contexto
+const themes = {
+  light: {
+    foreground: "#000000",
+    background: "#eeeeee"
+  },
+  dark: {
+    foreground: "#ffffff",
+    background: "#222222"
+  }
+};
+
+// cria o contexto utilizadno um objeto default
+const ThemeContext = React.createContext(themes.light);
+
+// app principal envolvido no provider do contexto
+function App() {
+  return (
+    <ThemeContext.Provider value={themes.dark}>
+      { /* chama um componente filho */ }
+      <Toolbar />
+    </ThemeContext.Provider>
+  );
+}
+
+function Toolbar(props) {
+  return (
+    <div>
+      { /* chama um terceiro nivel de componente */ }
+      <ThemedButton />
+    </div>
+  );
+}
+
+function ThemedButton() {
+  // usa o hook para invocar o contexto criado lá no primeiro nivel
+  const theme = useContext(ThemeContext);
+  return (
+    <button style={{ background: theme.background, color: theme.foreground }}>
+      I am styled by theme context!
+    </button>
+  );
+}
+```
+
+`themes.light` não é o valor que chegará ao `ThemedButton`, o valor que chegará lá é o `themes.dark`. Porém caso o `ThemedButton` requera algo que não corresponda ao que foi passado como atributo no provider então o valor defaul é utilizado (caso tenha correspondencia com ele).
+
+## O projeto
+Aqui farei a mesma coisa que o exemplo da documentação, porém de um jeito mais legal, e mostrando a funcionalidade de reload automatico entre componentes que participam do provider.
+
+Para isso eu criei dois componentes de botão, ambos com códigos muito parecidos, compartilhando o mesmo contexto, porém um deles possui a função de modificar os valores do contexto. Assim que os valores são modificados o outro botão também recarrega com os novos valores.
+
+> OBS 1.: mesmo que o segundo componente não utilizasse o useContext ele iria recarregar, isso porque ele entá dentro do provider.
+
+> OBS 2.: Veja que se colocarmos o provider envolvendo todo o nosso App a aplicação inteira irá recarregar sempre que algo for alterado. Logo tome cuidado com isso.
+
+- Definindo o tema inicial em `Themes.js`
+```JavaScript
+export default {
+    light: {
+        foreground: "#000000",
+        background: "#eeeeee"
+    },
+    dark: {
+        foreground: "white",
+        background: "black"
+    }
+};
+```
+
+- Criando um contexto nulo em `Context.js`
+```JavaScript
+import React from 'react';
+  
+const ThemeContext = React.createContext(null);
+
+export default ThemeContext;
+```
+
+- Colocando o provider do contexto dentro do `App.js`
+```JavaScript
+import React, {useState} from 'react';
+import Button from './Button';
+import Button2 from './Button2';
+import ThemeContext from './Context'
+import themes from './Themes';
+
+function App() {
+  const [theme, setTheme] = useState(themes);
+
+  return (
+    <ThemeContext.Provider value={{theme, setTheme}}>
+      <Button />
+      <Button2 />
+    </ThemeContext.Provider>
+  );
+}
+
+export default App;
+```
+
+> Veja que o valor encaminhado para frente foi a variável e a função do useState, o que nos permitirá executar o setTheme nos componentes abaixo e assim propagar essa mudança por toda a árvore de componentes
+
+- Criando o botão de modificação em `Button.js`
+```JavaScript
+import React, {useContext} from 'react';
+import ThemeContext from './Context'
+
+const Button = (props) => {
+    const theme = useContext(ThemeContext);
+    const newTheme = {
+        light: {
+            foreground: "#000000",
+            background: "#eeeeee"
+        },
+        dark: {
+            foreground: "#ff79c6",
+            background: "#282a36"
+        }
+    };
+
+    return (
+        <button style={{ background: theme.theme.dark.background, color: theme.theme.dark.foreground }} onClick={() => theme.setTheme(newTheme)}>
+            Primeiro Botão
+        </button>
+    );
+}
+
+export default Button;
+```
+
+- Criando o outro botão que serve somente para mostrar a funcionalidade em `Button2.js`
+```JavaScript
+import React, {useContext, useEffect} from 'react';
+import ThemeContext from './Context'
+
+const Button2 = (props) => {
+    const theme = useContext(ThemeContext);
+    console.log('aqui');
+    
+    return (
+        <button style={{ background: theme.theme.dark.background, color: theme.theme.dark.foreground }}>
+            Segundo botão
+        </button>
+    );
+}
+
+export default Button2;
+```
+
+<img src='./images/figure003.gif' width='300' />
 
 # Projeto use-reducer
 ## Utilidade do hook

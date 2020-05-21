@@ -1,21 +1,17 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
+import Button from './Button';
+import Button2 from './Button2';
+import ThemeContext from './Context'
+import themes from './Themes';
 
 function App() {
-  const [count, setCount] = useState(0);
-  
-  useEffect(() => {
-    console.log('montagem do componente');
-  }, []);
-  
-  useEffect(() => {
-    console.log('atualização do componente');
-  }, [count]);
+  const [theme, setTheme] = useState(themes);
 
   return (
-    <div>
-      <p>Count: {count}</p>
-      <button onClick={() => setCount(count + 1)} >Add +1</button>
-    </div>
+    <ThemeContext.Provider value={{theme, setTheme}}>
+      <Button />
+      <Button2 />
+    </ThemeContext.Provider>
   );
 }
 
