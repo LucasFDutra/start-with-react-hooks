@@ -346,35 +346,211 @@ export default Button2;
 
 # Projeto use-reducer
 ## Utilidade do hook
-## O projeto
+Ele funciona de auternativa ao useState, ele serve para guardar estados. E se torna preferível ao useState quando se tem uma lógica de estados complexas acontecendo dentro do componente.
 
+Se já ouviu falar de redux, isso aqui vai parecer bastante, mas acontece que o useReducer é mais recomendado para trabalhar dentro de um componente, e o redux para gerenciar os estados de toda a aplicação. Claro que se utilizarmos o useReducer em conjunto com o useContext teremos uma coisa bem proxima ao redux, mas tudo depende do como você irá implementar isso.
+
+para utilizar o hook escreva o código com a seguinte estrutura:
+
+```JavaScript
+import React, {useReducer} from 'react';
+
+const initialState = {/*objeto com os valores iniciais*/}
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'instrução_passada_pela_action':
+      return {/*modificação no state*/};
+  }
+};
+
+function App() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  return(
+    // codigo jsx
+  )
+}
+
+export default App;
+```
+
+utilize a função `dispatch` para poder modificar o valor do state de acordo com alguma action.
+
+```JavaScript
+() => dispatch({type: 'instrução'})
+```
+
+## O projeto
+Vou fazer um contador simples utilizando o hook.
+
+```JavaScript
+import React, {useReducer} from 'react';
+
+const initialState = {count: 0}
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'increment':
+      return {count: state.count + 1};
+    case 'decrement':
+      return {count: state.count - 1};
+    default:
+      throw new Error();
+  }
+};
+
+function App() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  return(
+    <>
+      Count: {state.count}
+      <div>
+        <button onClick={() => dispatch({type: 'decrement'})}>-</button>
+        <button onClick={() => dispatch({type: 'increment'})}>+</button>
+      </div>
+    </>
+  )
+}
+
+export default App;
+```
+
+<img src='./images/figure004.gif' width='300' />
 
 # Projeto use-callback
 ## Utilidade do hook
-## O projeto
+O useCallback serve para memorizar funções. Sendo que uma função muda se suas entradas mudam. Ele parte da premissa que se uma função receber os mesmos parâmetros que ela recebeu anteriormente ela obviamente retornará o mesmo resultado, logo a saida será a mesma, então não precisa recriar essa função. isso evita reenderizações desnecessárias.
 
+Para utilizar o hook:
+
+```JavaScript
+const memoizedCallback = useCallback(
+  () => {
+    doSomething(a, b);
+  },
+  [a, b],
+);
+```
+
+## O projeto
+Criarei um contador, mas dividido em dois arquivos, sendo um o componente botão que não irá reenderizar toda vez. mas também preciso usar o `memo`.
+
+- Button
+  ```JavaScript
+  import React, {memo} from 'react';
+
+  const Button = memo(({increment}) => {
+    console.log('render');
+    return(
+      <div>
+        <button onClick={() => increment()}>Add + 1</button>
+      </div>
+    );
+  }
+  )
+
+  export default Button;
+  ```
+
+- app
+  ```JavaScript
+  import React, {useState, useCallback} from 'react';
+  import Button from './Button';
+
+  function App() {
+    const [count, setCount] = useState(0);
+    
+    const increment = useCallback(() => {
+      setCount(value => value + 1);
+    }, []);
+
+    return (
+      <div>
+        <p>Count: {count}</p>
+        <Button increment={increment} />
+      </div>
+    );
+  }
+
+  export default App;
+  ```
+<img src='./images/figure005.gif' width='300' />
+
+Veja que o render aparece uma unica vez e depois não precisa mais. pq a função não mudou, logo o que chega no Button também não mudou. se eu passasse direto o setCount pro componente Button, ele iria reenderizar mesmo com o memo.
 
 # Projeto use-memo
 ## Utilidade do hook
+Assim como o useCallback o use memo também serve para memorizar a função que está dentro dele, e só refazer a mesma caso seja necessário. a diferença é que o use memo armazena o retorna da função.
+
+para utilizar:
+
+```JavaScript
+const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
+```
+
 ## O projeto
+novamente vamos fazer um contador. mas dessa vez também mostraremos qual a maior palavra dentre duas palavras de um array.
+
+```JavaScript
+import React, { useState, useMemo } from "react";
+
+function computeLongestWord(data) {
+  console.log('verificando palavras');
+  if (data[0].lenght > data[1].lenght){
+    return data[0];
+  } else {
+    return data[1];
+  }
+}
+
+const data = ['palavra', 'outra palavra']
+
+const App = () => {
+  const [count, setCount] = useState(0);
+
+  const longestWord = useMemo(() => computeLongestWord(data), [data]);
+
+  return (
+    <div>
+      <div>count: {count}</div>
+      <button onClick={() => setCount(count + 1)}>increment</button>
+      <div>{longestWord}</div>
+    </div>
+  );
+};
+
+export default App;
+```
+
+<img src='./images/figure006.gif' width='300' />
+
+Veja que a função computeLongestWord não é executada toda vez que adicionamos um novo valor ao contador, o que gera um novo render. porém como o use memo viu que data não mudou nada desde o ultimo render, ele não disparou a função computeLongestWord.
+
+Isso não aconteceria se o data tivesse sido declarado dentro da app, pois o data seria recriado sempre, e isso faria com que o use memo acreditasse que houve mudança.
 
 
 # Projeto use-ref
 ## Utilidade do hook
 ## O projeto
 
+<img src='./images/figure007.gif' width='300' />
 
 # Projeto use-imperative-handle
 ## Utilidade do hook
 ## O projeto
 
+<img src='./images/figure008.gif' width='300' />
 
 # Projeto use-layout-effect
 ## Utilidade do hook
 ## O projeto
 
+<img src='./images/figure009.gif' width='300' />
 
 # Projeto use-debug-value
 ## Utilidade do hook
 ## O projeto
 
+<img src='./images/figure010.gif' width='300' />

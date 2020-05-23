@@ -1,22 +1,28 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useMemo } from "react";
 
-function App() {
+function computeLongestWord(data) {
+  console.log('verificando palavras');
+  if (data[0].lenght > data[1].lenght){
+    return data[0];
+  } else {
+    return data[1];
+  }
+}
+
+const data = ['palavra', 'outra palavra']
+
+const App = () => {
   const [count, setCount] = useState(0);
-  
-  useEffect(() => {
-    console.log('montagem do componente');
-  }, []);
-  
-  useEffect(() => {
-    console.log('atualização do componente');
-  }, [count]);
+
+  const longestWord = useMemo(() => computeLongestWord(data), [data]);
 
   return (
     <div>
-      <p>Count: {count}</p>
-      <button onClick={() => setCount(count + 1)} >Add +1</button>
+      <div>count: {count}</div>
+      <button onClick={() => setCount(count + 1)}>increment</button>
+      <div>{longestWord}</div>
     </div>
   );
-}
+};
 
 export default App;

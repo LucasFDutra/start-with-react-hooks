@@ -1,22 +1,30 @@
-import React, {useState, useEffect} from 'react';
+import React, {useReducer} from 'react';
+
+const initialState = {count: 0}
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'increment':
+      return {count: state.count + 1};
+    case 'decrement':
+      return {count: state.count - 1};
+    default:
+      throw new Error();
+  }
+};
 
 function App() {
-  const [count, setCount] = useState(0);
-  
-  useEffect(() => {
-    console.log('montagem do componente');
-  }, []);
-  
-  useEffect(() => {
-    console.log('atualização do componente');
-  }, [count]);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  return (
-    <div>
-      <p>Count: {count}</p>
-      <button onClick={() => setCount(count + 1)} >Add +1</button>
-    </div>
-  );
+  return(
+    <>
+      Count: {state.count}
+      <div>
+        <button onClick={() => dispatch({type: 'decrement'})}>-</button>
+        <button onClick={() => dispatch({type: 'increment'})}>+</button>
+      </div>
+    </>
+  )
 }
 
 export default App;
