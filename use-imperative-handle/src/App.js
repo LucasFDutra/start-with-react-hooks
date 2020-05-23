@@ -1,22 +1,26 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, forwardRef, useImperativeHandle, useRef} from 'react';
 
-function App() {
+const ComponentWithButton = forwardRef((props, ref) => {
+  useImperativeHandle(ref, () => ({increment}))
   const [count, setCount] = useState(0);
-  
-  useEffect(() => {
-    console.log('montagem do componente');
-  }, []);
-  
-  useEffect(() => {
-    console.log('atualização do componente');
-  }, [count]);
-
+  const increment = () => setCount(count + 1);
   return (
     <div>
-      <p>Count: {count}</p>
-      <button onClick={() => setCount(count + 1)} >Add +1</button>
+      <button onClick={increment}>click</button>
+      <h2>Count: {count}</h2>
+    </div>
+  )
+})
+
+
+const App = () => {
+  const ref = useRef();
+  return (
+    <div>
+      <ComponentWithButton ref={ref} />
+      <button onClick={() => ref.current.increment()}>another button</button>
     </div>
   );
-}
+};
 
 export default App;

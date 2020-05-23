@@ -1,6 +1,5 @@
 # Do que se trata esse repositório
-Aqui vou criar e descrever um pequeno projeto com o objetivo de complementar meus estudos em react, mais especificamente com os react-hooks.
-Para tal, irei criar vários projetos, cada um para um determinado hook.
+vou descrever para que serve cada hook e criarei um projeto simples para exemplificar cada um. Farei isso com o objetivo de estudar.
 
 [Link para a documentação](https://pt-br.reactjs.org/docs/hooks-intro.html)
 
@@ -84,7 +83,7 @@ import React, {nomeDoHook} from 'react';
 ## Utilidade do hook
 O useState serve para guardar um estado. De forma simples, ele guarda o valor de uma váriavel e também pode alterá-la.
 
-O use state possui a seguinte sintax:
+## Como utilizar
 
 ```JavaScript
 const [variable, setVariable] = useState(initialValue);
@@ -128,7 +127,9 @@ export default App;
 
 Esse hook consegue exercer duas funções diferentes (que me interessam kkk)
 
-### Na montagem do componente
+## Como utilizar
+
+#### Na montagem do componente
 ```JavaScript
 useEffect(() => {
   código...
@@ -137,7 +138,7 @@ useEffect(() => {
 
 Com essa sintaxe ele executa o código assim que o componente é montado.
 
-### Na atualização do componente
+#### Na atualização do componente
 
 ```JavaScript
 useEffect(() => {
@@ -189,6 +190,7 @@ Para quando queremos que uma árvore de componentes tenha acesso a determinadas 
 
 > Porém vale ressaltar que essa solução se aplica apenas para componentes dentro da mesma árvore de componentes. E que se deve ter um certo cuidade com isso, pois pode prejudicar a reutilização de componentes.
 
+## Como utilizar
 Para indicar sua utilização, vou pegar o exemplo da propria documentação do react.
 
 ```JavaScript
@@ -325,7 +327,7 @@ export default Button;
 
 - Criando o outro botão que serve somente para mostrar a funcionalidade em `Button2.js`
 ```JavaScript
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import ThemeContext from './Context'
 
 const Button2 = (props) => {
@@ -350,7 +352,7 @@ Ele funciona de auternativa ao useState, ele serve para guardar estados. E se to
 
 Se já ouviu falar de redux, isso aqui vai parecer bastante, mas acontece que o useReducer é mais recomendado para trabalhar dentro de um componente, e o redux para gerenciar os estados de toda a aplicação. Claro que se utilizarmos o useReducer em conjunto com o useContext teremos uma coisa bem proxima ao redux, mas tudo depende do como você irá implementar isso.
 
-para utilizar o hook escreva o código com a seguinte estrutura:
+## Como utilizar
 
 ```JavaScript
 import React, {useReducer} from 'react';
@@ -431,7 +433,7 @@ Isso acontece pois a função que é passada por `props` não está dentro de um
 
 Em resumo, o `useCallback` evita recrear uma função de forma desnecessária.
 
-Para utilizar o hook:
+## Como utilizar
 
 ```JavaScript
 const memorizedCallback = useCallback(
@@ -496,7 +498,7 @@ Veja que o render aparece uma unica vez e depois não precisa mais. pq a funçã
 ## Utilidade do hook
 funciona de forma identica ao useCallback, porém ele não retorna uma função com mesma referência, ele retorna o valor retornado por aquela função e evita que ela seja executada novamente caso seja desnecessário.
 
-para utilizar:
+## Como utilizar
 
 ```JavaScript
 const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
@@ -546,6 +548,8 @@ Isso não aconteceria se o `data` tivesse sido declarado dentro da app, pois o `
 ## Utilidade do hook
 Ele serve para definir referências para coisas do nosso componente, sendo isso uma função ou então um conponente dentro do componente. E depois podemos resgatar essa referência em algum outro lugar.
 
+## Como utilizar
+
 ```JavaScript
 const refContainer = useRef(initialValue);
 ```
@@ -577,18 +581,57 @@ export default App;
 
 # Projeto use-imperative-handle
 ## Utilidade do hook
+utilizado juntamente com o useRef, esse hook permite que um método de dentro de um componente seja executado por outro.
+
+## Como utilizar
+
+para utilizar:
+```JavaScript
+useImperativeHandle(ref, createHandle, [deps])
+```
+
 ## O projeto
+nesse projeto vou criar um componente que tem um botão que executa o incremento em valor, e outro botão dentro do app que executa a função de incremento dentro do outro botão.
+
+```JavaScript
+import React, {useState, forwardRef, useImperativeHandle, useRef} from 'react';
+
+const ComponentWithButton = forwardRef((props, ref) => {
+  useImperativeHandle(ref, () => ({increment}))
+  const [count, setCount] = useState(0);
+  const increment = () => setCount(count + 1);
+  return (
+    <div>
+      <button onClick={increment}>click</button>
+      <h2>Count: {count}</h2>
+    </div>
+  )
+})
+
+
+const App = () => {
+  const ref = useRef();
+  return (
+    <div>
+      <ComponentWithButton ref={ref} />
+      <button onClick={() => ref.current.increment()}>another button</button>
+    </div>
+  );
+};
+
+export default App;
+```
 
 <img src='./images/figure008.gif' width='300' />
 
 # Projeto use-layout-effect
 ## Utilidade do hook
-## O projeto
+ele funciona igual ao useEffect porém ele não executa no inicio do carregamento do componente, ele executa depois de tudo ser reenderizado. Pode ser útil para capturar dimensões da tela após operaçoes serem feitas que podem por exemplo modificarem o tamanho de uma fase, e estilizar aquela parte de acordo com esse novo tamanho.
 
-<img src='./images/figure009.gif' width='300' />
+## Como utilizar
 
-# Projeto use-debug-value
-## Utilidade do hook
-## O projeto
-
-<img src='./images/figure010.gif' width='300' />
+```JavaScript
+useLayoutEffect(() => {
+  código...
+}, []);
+```
