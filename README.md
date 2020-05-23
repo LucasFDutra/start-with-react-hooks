@@ -1,5 +1,5 @@
-[**English**](#English)
-[**Português**](#Português)
+- [**English**](#English)
+- [**Português**](#Português)
 
 # English
 ---
