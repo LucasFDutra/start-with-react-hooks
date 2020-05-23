@@ -421,18 +421,30 @@ export default App;
 
 # Projeto use-callback
 ## Utilidade do hook
-O useCallback serve para memorizar funções. Sendo que uma função muda se suas entradas mudam. Ele parte da premissa que se uma função receber os mesmos parâmetros que ela recebeu anteriormente ela obviamente retornará o mesmo resultado, logo a saida será a mesma, então não precisa recriar essa função. isso evita reenderizações desnecessárias.
+Quando uma função é criada na memoria ela ocupa um espaço, e nisso ela ganha uma referênica. e o compartivo entre funções é feito exatamente comparando a referência, ou seja, se o ponteiro de duas funções apontarem para o mesmo endereço elas são logicamente iguais. Porém, a cada render do react a função é recreada, o que faz a referencia mudar.
+
+olhando isso na pela óptica de um exemplo. (que será o nosso projeto)
+
+suponha um componente pai e dentro um componente filho, esse componente filho recebe uma função por meio das `props`, e sempre o que reenderiza ele tb precisa ser reenderizado. Até ai tudo normal, mas você nota que não precisa reenderizar o filho sempre, então coloca em torno de um `memo`, que irá impedir o filho de reenderizar quando as `props` atuais forem iguais as anteriores. Porém ele continua reenderizando sempre.
+
+Isso acontece pois a função que é passada por `props` não está dentro de um `useCallback`, logo sempre que o componente pai recarregar a função modifica a referência e o `memo` pensa que a prop mudou. Mas se colocarmos essa função dentro do `useCallback` ele verificará que nenhum atributo da função foi modificado, logo ele não precisa reconstruir a função, e isso impede que a referência da função seja modificada e assim o `memo` pega a igualdade da prop e evita o render do filho.
+
+Em resumo, o `useCallback` evita recrear uma função de forma desnecessária.
 
 Para utilizar o hook:
 
 ```JavaScript
-const memoizedCallback = useCallback(
+const memorizedCallback = useCallback(
   () => {
     doSomething(a, b);
   },
   [a, b],
 );
 ```
+
+agora ao em vez de chamar por `doSomething` você chama por `memorizedCallback`. Ou seja, o use callback retorna uma função que executa a mesma coisa que a função dentro dele, porém essa nova função pode ou não ter outra referência dependendo se os parâmetros dentro de colchetes foram modificados.
+
+- [Recomendação](https://www.youtube.com/watch?v=RZG0iRfUaY0)
 
 ## O projeto
 Criarei um contador, mas dividido em dois arquivos, sendo um o componente botão que não irá reenderizar toda vez. mas também preciso usar o `memo`.
@@ -482,7 +494,7 @@ Veja que o render aparece uma unica vez e depois não precisa mais. pq a funçã
 
 # Projeto use-memo
 ## Utilidade do hook
-Assim como o useCallback o use memo também serve para memorizar a função que está dentro dele, e só refazer a mesma caso seja necessário. a diferença é que o use memo armazena o retorna da função.
+funciona de forma identica ao useCallback, porém ele não retorna uma função com mesma referência, ele retorna o valor retornado por aquela função e evita que ela seja executada novamente caso seja desnecessário.
 
 para utilizar:
 
@@ -526,10 +538,9 @@ export default App;
 
 <img src='./images/figure006.gif' width='300' />
 
-Veja que a função computeLongestWord não é executada toda vez que adicionamos um novo valor ao contador, o que gera um novo render. porém como o use memo viu que data não mudou nada desde o ultimo render, ele não disparou a função computeLongestWord.
+Veja que a função `computeLongestWord` não é executada toda vez que adicionamos um novo valor ao contador, o que gera um novo render. porém como o use memo viu que `data` não mudou nada desde o ultimo render, ele não disparou a função `computeLongestWord`.
 
-Isso não aconteceria se o data tivesse sido declarado dentro da app, pois o data seria recriado sempre, e isso faria com que o use memo acreditasse que houve mudança.
-
+Isso não aconteceria se o `data` tivesse sido declarado dentro da app, pois o `data` seria recriado sempre, e isso faria com que o use memo acreditasse que houve mudança.
 
 # Projeto use-ref
 ## Utilidade do hook
