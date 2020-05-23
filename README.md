@@ -544,7 +544,34 @@ Isso não aconteceria se o `data` tivesse sido declarado dentro da app, pois o `
 
 # Projeto use-ref
 ## Utilidade do hook
+Ele serve para definir referências para coisas do nosso componente, sendo isso uma função ou então um conponente dentro do componente. E depois podemos resgatar essa referência em algum outro lugar.
+
+```JavaScript
+const refContainer = useRef(initialValue);
+```
+
 ## O projeto
+Aqui vamos referenciar um componente do nosso componente, e vamos executar uma modificação nele sem chamá-lo diretamente, vamos chamá-lo pela sua referência. Essa ação será simplesmente dar o foco ao input após clicar no botão.
+
+```JavaScript
+import React, {useRef} from 'react';
+
+function App() {
+  const inputEl = useRef(null);
+  const onButtonClick = () => {
+    inputEl.current.focus();
+  };
+  return (
+    <>
+      <input ref={inputEl} type="text" />
+      <button onClick={onButtonClick}>Focus no input</button>
+    </>
+  );
+}
+
+export default App;
+
+```
 
 <img src='./images/figure007.gif' width='300' />
 

@@ -1,21 +1,15 @@
-import React, {useState, useEffect} from 'react';
+import React, {useRef} from 'react';
 
 function App() {
-  const [count, setCount] = useState(0);
-  
-  useEffect(() => {
-    console.log('montagem do componente');
-  }, []);
-  
-  useEffect(() => {
-    console.log('atualização do componente');
-  }, [count]);
-
+  const inputEl = useRef(null);
+  const onButtonClick = () => {
+    inputEl.current.focus();
+  };
   return (
-    <div>
-      <p>Count: {count}</p>
-      <button onClick={() => setCount(count + 1)} >Add +1</button>
-    </div>
+    <>
+      <input ref={inputEl} type="text" />
+      <button onClick={onButtonClick}>Focus no input</button>
+    </>
   );
 }
 
